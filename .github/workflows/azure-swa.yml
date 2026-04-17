@@ -39,7 +39,7 @@ jobs:
           action: 'upload'
           app_location: '/'
           output_location: 'dist/Cartonera.Barcode/browser'
-          skip_app_build: true  # We already built above
+          skip_app_build: true # We already built above
 
   close_pull_request:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
