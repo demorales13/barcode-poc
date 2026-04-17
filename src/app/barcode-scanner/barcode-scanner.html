@@ -1,0 +1,81 @@
+<div class="scanner-card">
+    <div class="scanner-header">
+        <h2>Lector de Códigos de Barras</h2>
+        <p class="subtitle">Apunta la cámara hacia un código de barras para escanearlo</p>
+    </div>
+
+    <div class="camera-section">
+        <div class="video-wrapper" [class.active]="isScanning()">
+            <video #videoElement autoplay muted playsinline aria-label="Vista de cámara para escaneo"></video>
+            @if (!isScanning()) {
+            <div class="video-placeholder" role="img" aria-label="Cámara inactiva">
+                <span class="camera-icon" aria-hidden="true">&#x1F4F7;</span>
+                <span>Cámara inactiva</span>
+            </div>
+            }
+            @if (isScanning()) {
+            <div class="scan-overlay" aria-hidden="true">
+                <div class="scan-frame">
+                    <div class="corner tl"></div>
+                    <div class="corner tr"></div>
+                    <div class="corner bl"></div>
+                    <div class="corner br"></div>
+                    <div class="scan-line"></div>
+                </div>
+            </div>
+            }
+        </div>
+
+        <div class="controls" role="group" aria-label="Controles de escáner">
+            @if (!isScanning()) {
+            <button class="btn btn-primary" (click)="startScanning()" [disabled]="state() === 'requesting'"
+                [attr.aria-busy]="state() === 'requesting'">
+                @if (state() === 'requesting') {
+                <span class="spinner" aria-hidden="true"></span>
+                Iniciando cámara…
+                } @else {
+                <span aria-hidden="true">&#x25B6;</span>
+                Iniciar escaneo
+                }
+            </button>
+            } @else {
+            <button class="btn btn-secondary" (click)="stopScanning()">
+                <span aria-hidden="true">&#x25A0;</span>
+                Detener
+            </button>
+            }
+        </div>
+
+        @if (state() === 'error') {
+        <div class="error-banner" role="alert">
+            <span aria-hidden="true">&#x26A0;&#xFE0F;</span>
+            {{ errorMessage() }}
+        </div>
+        }
+    </div>
+
+    @if (lastResult()) {
+    <div class="last-result" role="status" aria-live="polite">
+        <span class="result-label">Último resultado</span>
+        <span class="result-text">{{ lastResult()!.text }}</span>
+        <span class="result-meta">{{ lastResult()!.format }} · {{ lastResult()!.timestamp | date:'HH:mm:ss' }}</span>
+    </div>
+    }
+
+    @if (hasResults()) {
+    <div class="history-section">
+        <div class="history-header">
+            <h3>Historial</h3>
+            <button class="btn-link" (click)="clearResults()">Limpiar</button>
+        </div>
+        <ul class="result-list" aria-label="Historial de códigos escaneados">
+            @for (item of results(); track item.timestamp) {
+            <li class="result-item">
+                <span class="item-text">{{ item.text }}</span>
+                <span class="item-meta">{{ item.format }} · {{ item.timestamp | date:'HH:mm:ss' }}</span>
+            </li>
+            }
+        </ul>
+    </div>
+    }
+</div>
